@@ -10,21 +10,13 @@ CMD ["/sbin/my_init"]
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Nginx-PHP Installation
-RUN apt-get update -y && apt-get install -y wget build-essential python-software-properties git-core vim nano
-RUN wget -O - https://download.newrelic.com/548C16BF.gpg | apt-key add - && \
-	echo "deb http://apt.newrelic.com/debian/ newrelic non-free" > /etc/apt/sources.list.d/newrelic.list
-RUN apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 4F4EA0AAE5267A6C
-RUN add-apt-repository -y ppa:ondrej/php && add-apt-repository -y ppa:nginx/stable
-RUN apt-get update -y && apt-get upgrade -y && apt-get install -q -y php5.6 php5.6-dev php5.6-fpm php5.6-mysqlnd \
-	php5.6-pgsql php5.6-curl php5.6-gd php5.6-mbstring php5.6-mcrypt php5.6-intl php5.6-imap php5.6-tidy \
-	php5.6-xml php5.6-xmlrpc zip unzip php5.6-zip newrelic-php5 nginx-full ntp
+RUN add-apt-repository -y ppa:ondrej/php && apt-get update -y
+RUN apt-get install -y ntp nginx php5.6-mysql php5.6-opcache php5.6-readline php5.6-soap php5.6-xml php5.6-xsl php5.6-zip \
+        php5.6-bcmath php5.6-cli php5.6-common php5.6-curl php5.6-fpm php5.6-gd php5.6-intl php5.6-json php5.6-mbstring php5.6-mcrypt
 
 # Create new symlink to UTC timezone for localtime
 RUN unlink /etc/localtime
-RUN ln -s /usr/share/zoneinfo/UTC /etc/localtime
-
-# Update PECL channel listing
-RUN pecl channel-update pecl.php.net
+RUN ln -s /usr/share/zoneinfo/Europe/Malta /etc/localtime
 
 # Add build script
 RUN mkdir -p /root/setup
@@ -56,16 +48,6 @@ ADD www/index.php /var/www/public/index.php
 
 RUN chown -R www-data:www-data /var/www
 RUN chmod -R 755 /var/www
-
-# Add New Relic APM install script
-RUN mkdir -p /etc/my_init.d
-ADD build/newrelic.sh /etc/my_init.d/newrelic.sh
-RUN chmod +x /etc/my_init.d/newrelic.sh
-
-# Setup environment variables for initializing New Relic APM
-ENV NR_INSTALL_SILENT 1
-ENV NR_INSTALL_KEY **ChangeMe**
-ENV NR_APP_NAME "Docker PHP Application"
 
 # Set terminal environment
 ENV TERM=xterm

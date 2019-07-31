@@ -33,18 +33,6 @@ The image generates a self-signed certificate for each container within the fold
 
 During build the ``build/default`` file is used to copy and configure nginx default settings. This includes a cipher suite for legacy browser (IE8+) support. See: [https://cipherli.st/](https://cipherli.st/)
 
-### New Relic APM
-Installs New Relic APM daemon on [container startup](https://github.com/phusion/baseimage-docker#running_startup_scripts) to monitor the php application within the image. See [this tutorial](http://code.tutsplus.com/tutorials/how-to-monitor-docker-based-applications-using-new-relic--cms-24891) for more information.
-
-The following environment variables are required in order to complete the New Relic configuration:
-
-* ``NR_INSTALL_KEY`` 134adf09dsfblahsomething
-* ``NR_APP_NAME`` "Docker PHP App Name"
-
-If the ``NR_INSTALL_KEY`` New Relic will not be setup. By default this will prevent monitoring as the key is invalid until entered on startup. Eg:
-
-``docker run --name nginx -e NR_INSTALL_KEY="134adf09dsfblahsomething" -e NR_APP_NAME="nginx-test" -p 80:80 -p 443:443 -d mstrazds/nginx-php56:latest``
-
 ### Build Folder (within repo)
 Contains nginx config files as well as php-fpm settings. Also include setup.sh file that offloads tasks from the Dockerfile to reduce layers.
 
